@@ -7,6 +7,8 @@ import sessionHandler from "./middlewares/session.ts";
 import passportHandler from "./middlewares/passport.ts";
 import { currentUserHandler } from "./middlewares/currentUser.ts";
 
+import { filesRoutes } from "./routes/filesRoutes.ts";
+
 import { validateSignup, validateLogin } from "./middlewares/validations.ts";
 import { validationResult, matchedData } from "express-validator";
 import bcrypt from "bcryptjs";
@@ -22,6 +24,7 @@ app.use(sessionHandler);
 app.use(passportHandler.session());
 app.use(urlencoded({ extended: false }));
 app.use(currentUserHandler);
+app.use("/files", filesRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   if (req.isUnauthenticated()) {

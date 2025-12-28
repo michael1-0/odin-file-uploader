@@ -6,15 +6,9 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Home</h1>
-    <a href="/files/new">New File</a>
-    <hr />
-    <div class="container">
-      Files and folders will be here
-    </div>
-    <hr />
-    <div>
-      <a href="/log-out">log out</a>
-    </div>
+    <form action="/files" method="POST" enctype="multipart/form-data">
+      <input type="file" name="userFile" />
+      <button type="submit">Submit file</button>
+    </form>
   </body>
 </html>
