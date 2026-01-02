@@ -8,6 +8,7 @@ import passportHandler from "./middlewares/passport.ts";
 import { currentUserHandler } from "./middlewares/currentUser.ts";
 
 import { filesRoutes } from "./routes/filesRoutes.ts";
+import { foldersRoutes } from "./routes/foldersRoutes.ts";
 
 import { validateSignup, validateLogin } from "./middlewares/validations.ts";
 import { validationResult, matchedData } from "express-validator";
@@ -25,12 +26,22 @@ app.use(passportHandler.session());
 app.use(urlencoded({ extended: false }));
 app.use(currentUserHandler);
 app.use("/files", filesRoutes);
+app.use("/folders", foldersRoutes);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   if (req.isUnauthenticated()) {
     return res.redirect("/log-in");
   }
-  res.render("home");
+  try {
+    const folders = await prisma.folder.findMany({
+      where: {
+        parentId: null,
+      },
+    });
+    res.render("home", { folders: folders, title: "Home",  folderId: null });
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get("/sign-up", (req: Request, res: Response) => {

@@ -6,12 +6,21 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Home</h1>
+    <h1><%= title %></h1>
+    <a href="/folders/<%= folderId ? `${folderId}/` : "" %>new">New Folder</a>
     <a href="/files/new">New File</a>
     <hr />
-    <div class="container">
-      Files and folders will be here
-    </div>
+
+    <% if (folders.length > 0) { %>
+      <% folders.forEach((folder, index) => { %>
+        <div>
+          folder <%= index + 1 %>: <a href="/folders/<%= folder.id %>"><%= folder.name %></a> <a href="/folders/<%= folder.id %>/del">delete</a> <a href="/folders/<%= folder.id %>/update">update</a>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="container">Files and folders will be here</div>
+    <% } %>
+
     <hr />
     <div>
       <a href="/log-out">log out</a>
