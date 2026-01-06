@@ -6,6 +6,7 @@ import { validationResult, matchedData } from "express-validator";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../db/prisma.ts";
+import { getBreadcrumbs } from "../util/breadcrumb.ts";
 
 async function getHome(req: Request, res: Response, next: NextFunction) {
   if (req.isUnauthenticated()) {
@@ -24,11 +25,13 @@ async function getHome(req: Request, res: Response, next: NextFunction) {
         userId: (req.user as any).id,
       },
     });
+    const breadcrumbs = await getBreadcrumbs(null);
     res.render("home", {
       folders: folders,
       title: "Home",
       folderId: null,
       files: files,
+      breadcrumbs: breadcrumbs,
     });
   } catch (err) {
     next(err);

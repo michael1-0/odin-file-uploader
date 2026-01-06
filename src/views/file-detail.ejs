@@ -13,7 +13,7 @@
       <li><strong>Size:</strong> <%= `${(file.size / (1024 * 1024)).toFixed(3)} MB`  %></li>
       <li><strong>Upload Date:</strong> <%=  new Date(file.uploadDate).toLocaleString()  %></li>
     </ul>
-    <div></div><a href="#">download</a>
+    <a href="<%= downloadUrl  %>">download</a>
     <div>
       <form action="/go-back" method="POST">
         <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">

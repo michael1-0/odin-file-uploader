@@ -45,7 +45,7 @@ model Folder {
 model Files {
   id         Int      @id @default(autoincrement())
   name       String
-  publicId  String
+  publicId   String
   fileType   String
   uploadDate DateTime
   size       String

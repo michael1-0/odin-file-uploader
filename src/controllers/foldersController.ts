@@ -1,6 +1,7 @@
 import type { Response, Request, NextFunction } from "express";
 import { prisma } from "../db/prisma.ts";
 import cloudinary from "../util/cloudinary.ts";
+import { getBreadcrumbs } from "../util/breadcrumb.ts";
 
 function getFolderForm(req: Request, res: Response) {
   if (req.isUnauthenticated()) {
@@ -52,11 +53,13 @@ async function getFolderById(req: Request, res: Response, next: NextFunction) {
         userId: (req.user as any).id,
       },
     });
+    const breadcrumbs = await getBreadcrumbs(folderId);
     res.render("home", {
       folders: folders,
       title: parentFolder?.name,
       folderId: folderId,
       files: files,
+      breadcrumbs: breadcrumbs,
     });
   } catch (err) {
     next(err);

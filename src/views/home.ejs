@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <h1><%= title %></h1>
+    <%- include('breadcrumb') %>
     <a href="/folders/<%= folderId ? `${folderId}/` : "" %>new">New Folder</a>
     <a href="/files/new<%= folderId ? `?containingFolder=${folderId}` : "" %>">New File</a>
     <hr />

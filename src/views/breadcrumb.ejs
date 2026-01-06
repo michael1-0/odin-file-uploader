@@ -1,0 +1,10 @@
+<h2>
+  <% breadcrumbs.forEach((crumb, index) => { %>
+    <% if (index === breadcrumbs.length - 1) { %>
+      <%= crumb.name %>
+    <% } else { %>
+      <a href="<%= crumb.id ? `/folders/${crumb.id}` : '/' %>"><%= crumb.name %></a>
+      <span> / </span>
+    <% } %>
+  <% }); %>
+</h2>

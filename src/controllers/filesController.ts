@@ -62,7 +62,19 @@ async function getFileById(req: Request, res: Response, next: NextFunction) {
         folderId: containingFolderId,
       },
     });
-    res.render("file-detail", { file: file, previousUrl: previousUrl });
+    if (!file) {
+      throw new Error("File not found");
+    }
+    const downloadUrl = cloudinary.url(file.publicId, {
+      flags: "attachment",
+      resource_type: "image",
+      type: "private",
+    });
+    res.render("file-detail", {
+      file: file,
+      previousUrl: previousUrl,
+      downloadUrl: downloadUrl,
+    });
   } catch (error) {
     next(error);
   }
@@ -101,14 +113,6 @@ async function deleteFileById(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function downloadFile(req: Request, res: Response, next: NextFunction) {
-  // todo
-  // const url = cloudinary.url(publicId, {
-  // flags: 'attachment',
-  // resource_type: 'auto'
-  // });
-}
-
 const postFilePipeline = [
   (req: Request, res: Response, next: NextFunction) => {
     if (req.isUnauthenticated()) {
@@ -120,10 +124,4 @@ const postFilePipeline = [
   postFile,
 ];
 
-export {
-  getFileForm,
-  postFilePipeline,
-  getFileById,
-  deleteFileById,
-  downloadFile,
-};
+export { getFileForm, postFilePipeline, getFileById, deleteFileById };
