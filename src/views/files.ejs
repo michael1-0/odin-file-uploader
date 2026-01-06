@@ -7,7 +7,13 @@
   </head>
   <body>
     <h1>Uploading file...</h1>
+    <% if (error) { %>
+      <div>
+        <%= error %>
+      </div>
+    <% } %>
     <form action="/files<%= `?containingFolder=${folderId ? folderId : -1}`  %>" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
       <input type="file" name="userFile" required />
       <button type="submit">Submit file</button>
     </form>

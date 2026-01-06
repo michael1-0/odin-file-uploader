@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db/prisma.ts";
-import multer from "../util/multer.ts";
+import multerUtil from "../util/multer.ts";
 import cloudinary from "../util/cloudinary.ts";
+import multer from "multer";
 
 function getFileForm(req: Request, res: Response) {
   if (req.isUnauthenticated()) {
@@ -11,6 +12,7 @@ function getFileForm(req: Request, res: Response) {
   res.render("files.ejs", {
     folderId: req.query.containingFolder,
     previousUrl: previousUrl,
+    error: null,
   });
 }
 
@@ -19,7 +21,7 @@ async function postFile(req: Request, res: Response, next: NextFunction) {
     if (!req.file) {
       throw new Error("No file uploaded");
     }
-    const result = await multer.uploadToCloudinary(req.file);
+    const result = await multerUtil.uploadToCloudinary(req.file);
 
     await prisma.files.create({
       data: {
@@ -113,6 +115,45 @@ async function deleteFileById(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+const handleMulterError = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const previousUrl = req.body.previousUrl || req.get("Referer") || "/";
+
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.render("files.ejs", {
+        folderId: req.query.containingFolder,
+        previousUrl: previousUrl,
+        error: "File size exceeds 10MB limit",
+      });
+    }
+    return res.render("files.ejs", {
+      folderId: req.query.containingFolder,
+      previousUrl: previousUrl,
+      error: `Upload error: ${err.message}`,
+    });
+  } else if (err) {
+    if (err.message === "Invalid file type") {
+      return res.render("files.ejs", {
+        folderId: req.query.containingFolder,
+        previousUrl: previousUrl,
+        error:
+          "Invalid file type. Only JPEG, JPG, PNG, and GIF images are allowed.",
+      });
+    }
+    return res.render("files.ejs", {
+      folderId: req.query.containingFolder,
+      previousUrl: previousUrl,
+      error: err.message || "Upload failed",
+    });
+  }
+  next();
+};
+
 const postFilePipeline = [
   (req: Request, res: Response, next: NextFunction) => {
     if (req.isUnauthenticated()) {
@@ -120,7 +161,8 @@ const postFilePipeline = [
     }
     next();
   },
-  multer.upload.single("userFile"),
+  multerUtil.upload.single("userFile"),
+  handleMulterError,
   postFile,
 ];
 

@@ -29,7 +29,7 @@ const upload = multer({
   ) => {
     checkFile(file, cb);
   },
-  limits: { fileSize: 104857600 }, // 100 mb
+  limits: { fileSize: 10485760 }, // 10 mb
 });
 const uploadToCloudinary = (
   file: Express.Multer.File
