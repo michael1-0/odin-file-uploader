@@ -12,5 +12,9 @@
       <input type="text" name="name" id="name" value="<%= locals.folderName || ""  %>" />
       <button type="submit">Submit</button>
     </form>
+    <form action="/go-back" method="POST">
+        <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
+        <button type="submit">go back</button>
+      </form>
   </body>
 </html>

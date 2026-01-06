@@ -13,6 +13,7 @@ model User {
   email    String   @unique
   password String   @db.VarChar(60)
   folders  Folder[]
+  files    Files[]
 
   @@map("users")
 }
@@ -27,15 +28,33 @@ model Session {
 }
 
 model Folder {
-  id   Int    @id @default(autoincrement())
-  name String
+  id    Int     @id @default(autoincrement())
+  name  String
+  files Files[]
 
-  userId Int?
-  user   User? @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   parentId     Int?
   parentFolder Folder?  @relation("ParentFolderSubFolders", fields: [parentId], references: [id], onDelete: Cascade)
   subFolder    Folder[] @relation("ParentFolderSubFolders")
 
   @@map("folders")
+}
+
+model Files {
+  id         Int      @id @default(autoincrement())
+  name       String
+  publicId  String
+  fileType   String
+  uploadDate DateTime
+  size       String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  folderId Int?
+  folder   Folder? @relation(fields: [folderId], references: [id])
+
+  @@map("files")
 }

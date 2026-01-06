@@ -15,9 +15,21 @@ async function getHome(req: Request, res: Response, next: NextFunction) {
     const folders = await prisma.folder.findMany({
       where: {
         parentId: null,
+        userId: (req.user as any).id,
       },
     });
-    res.render("home", { folders: folders, title: "Home", folderId: null });
+    const files = await prisma.files.findMany({
+      where: {
+        folderId: null,
+        userId: (req.user as any).id,
+      },
+    });
+    res.render("home", {
+      folders: folders,
+      title: "Home",
+      folderId: null,
+      files: files,
+    });
   } catch (err) {
     next(err);
   }
@@ -91,6 +103,11 @@ function getLogOut(req: Request, res: Response, next: NextFunction) {
   });
 }
 
+function goBack(req: Request, res: Response) {
+  const backURL = req.body.previousUrl || "/";
+  res.redirect(backURL);
+}
+
 const postSignUpPipeline = [validateSignup, postSignUp];
 const postLogInPipeline = [
   validateLogin,
@@ -108,4 +125,5 @@ export {
   getLogIn,
   postLogInPipeline,
   getLogOut,
+  goBack,
 };

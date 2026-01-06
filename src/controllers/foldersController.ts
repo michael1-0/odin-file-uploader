@@ -1,5 +1,6 @@
 import type { Response, Request, NextFunction } from "express";
 import { prisma } from "../db/prisma.ts";
+import cloudinary from "../util/cloudinary.ts";
 
 function getFolderForm(req: Request, res: Response) {
   if (req.isUnauthenticated()) {
@@ -45,10 +46,17 @@ async function getFolderById(req: Request, res: Response, next: NextFunction) {
         userId: (req.user as any).id,
       },
     });
+    const files = await prisma.files.findMany({
+      where: {
+        folderId: folderId,
+        userId: (req.user as any).id,
+      },
+    });
     res.render("home", {
       folders: folders,
       title: parentFolder?.name,
       folderId: folderId,
+      files: files,
     });
   } catch (err) {
     next(err);
@@ -60,7 +68,8 @@ function getFolderFormWithId(req: Request, res: Response) {
     return res.redirect("/log-in");
   }
   const folderId = req.params.id;
-  res.render("folders", { folderId });
+  const previousUrl = req.get("Referer") || "/";
+  res.render("folders", { folderId, previousUrl: previousUrl });
 }
 
 async function postFolderWithId(
@@ -97,7 +106,75 @@ async function deleteFolderById(
     return res.redirect("/log-in");
   }
   const folderId = Number(req.params.id);
-  try {
+  try { // wtf
+    const getAllFilesInFolder = async (folderId: number) => {
+      const files = await prisma.files.findMany({
+        where: { folderId, userId: (req.user as any).id },
+        select: { id: true, publicId: true, fileType: true },
+      });
+
+      const childFolders = await prisma.folder.findMany({
+        where: { parentId: folderId, userId: (req.user as any).id },
+        select: { id: true },
+      });
+
+      let allFiles = [...files];
+
+      for (const childFolder of childFolders) {
+        const childFiles = await getAllFilesInFolder(childFolder.id);
+        allFiles = allFiles.concat(childFiles);
+      }
+
+      return allFiles;
+    };
+
+    const files = await getAllFilesInFolder(folderId);
+
+    const imageFiles = files
+      .filter((f) => f.fileType.startsWith("image/"))
+      .map((f) => f.publicId);
+    const videoFiles = files
+      .filter((f) => f.fileType.startsWith("video/"))
+      .map((f) => f.publicId);
+    const rawFiles = files
+      .filter(
+        (f) =>
+          !f.fileType.startsWith("image/") && !f.fileType.startsWith("video/")
+      )
+      .map((f) => f.publicId);
+
+    const deleteInChunks = async (
+      publicIds: string[],
+      resourceType: "image" | "video" | "raw"
+    ) => {
+      const chunkSize = 100;
+      for (let i = 0; i < publicIds.length; i += chunkSize) {
+        const chunk = publicIds.slice(i, i + chunkSize);
+        try {
+          await cloudinary.api.delete_resources(chunk, {
+            type: "private",
+            resource_type: resourceType,
+          });
+        } catch (error) {
+          console.error(`Error deleting ${resourceType} files:`, error);
+        }
+      }
+    };
+
+    if (imageFiles.length > 0) await deleteInChunks(imageFiles, "image");
+    if (videoFiles.length > 0) await deleteInChunks(videoFiles, "video");
+    if (rawFiles.length > 0) await deleteInChunks(rawFiles, "raw");
+
+    const fileIds = files.map((f) => f.id);
+    if (fileIds.length > 0) {
+      await prisma.files.deleteMany({
+        where: {
+          id: { in: fileIds },
+          userId: (req.user as any).id,
+        },
+      });
+    }
+
     const deletedFolder = await prisma.folder.delete({
       where: {
         id: folderId,
@@ -109,6 +186,7 @@ async function deleteFolderById(
       : "/";
     res.redirect(path);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 }
@@ -147,6 +225,7 @@ async function getUpdateForm(req: Request, res: Response, next: NextFunction) {
     return res.redirect("/log-in");
   }
   const folderId = Number(req.params.id);
+  const previousUrl = req.get("Referer") || "/";
   try {
     const folder = await prisma.folder.findUnique({
       where: {
@@ -156,7 +235,7 @@ async function getUpdateForm(req: Request, res: Response, next: NextFunction) {
     });
     res.locals.isUpdate = true;
     res.locals.folderName = folder?.name;
-    res.render("folders", { folderId: folderId });
+    res.render("folders", { folderId: folderId, previousUrl: previousUrl });
   } catch (err) {
     next(err);
   }
