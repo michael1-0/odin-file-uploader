@@ -17,7 +17,7 @@ async function postFolder(req: Request, res: Response, next: NextFunction) {
   const user: any = req.user;
   const folderName = req.body.name;
   try {
-    const folder = await prisma.folder.create({
+    await prisma.folder.create({
       data: {
         name: folderName,
         userId: user.id,
@@ -35,28 +35,35 @@ async function getFolderById(req: Request, res: Response, next: NextFunction) {
   }
   const folderId = Number(req.params.id);
   try {
-    const folders = await prisma.folder.findMany({
-      where: {
-        parentId: folderId,
-        userId: (req.user as any).id,
-      },
-    });
     const parentFolder = await prisma.folder.findUnique({
       where: {
         id: folderId,
         userId: (req.user as any).id,
       },
     });
+
+    if (!parentFolder) {
+      return res.redirect("/");
+    }
+
+    const folders = await prisma.folder.findMany({
+      where: {
+        parentId: folderId,
+        userId: (req.user as any).id,
+      },
+    });
+
     const files = await prisma.files.findMany({
       where: {
         folderId: folderId,
         userId: (req.user as any).id,
       },
     });
-    const breadcrumbs = await getBreadcrumbs(folderId);
+
+    const breadcrumbs = await getBreadcrumbs(folderId, (req.user as any).id);
     res.render("home", {
       folders: folders,
-      title: parentFolder?.name,
+      title: parentFolder.name,
       folderId: folderId,
       files: files,
       breadcrumbs: breadcrumbs,
@@ -109,7 +116,8 @@ async function deleteFolderById(
     return res.redirect("/log-in");
   }
   const folderId = Number(req.params.id);
-  try { // wtf
+  try {
+    // wtf
     const getAllFilesInFolder = async (folderId: number) => {
       const files = await prisma.files.findMany({
         where: { folderId, userId: (req.user as any).id },
@@ -236,6 +244,9 @@ async function getUpdateForm(req: Request, res: Response, next: NextFunction) {
         userId: (req.user as any).id,
       },
     });
+    if (!folder) {
+      return res.status(404).render("error", { message: "Folder not found" });
+    }
     res.locals.isUpdate = true;
     res.locals.folderName = folder?.name;
     res.render("folders", { folderId: folderId, previousUrl: previousUrl });

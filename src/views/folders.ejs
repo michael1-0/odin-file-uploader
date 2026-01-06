@@ -9,7 +9,7 @@
     <h1><%= !locals.isUpdate ? "New" : "Update"  %> Folder</h1>
     <form action="/folders<%= folderId ?  `/${folderId}` : ""  %><%= !locals.isUpdate ? "" : "/update"  %>" method="POST">
       <label for="name">Folder Name:</label>
-      <input type="text" name="name" id="name" value="<%= locals.folderName || ""  %>" />
+      <input type="text" name="name" id="name" value="<%= locals.folderName || ""  %>" required/>
       <button type="submit">Submit</button>
     </form>
     <form action="/go-back" method="POST">

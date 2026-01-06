@@ -25,7 +25,7 @@ async function getHome(req: Request, res: Response, next: NextFunction) {
         userId: (req.user as any).id,
       },
     });
-    const breadcrumbs = await getBreadcrumbs(null);
+    const breadcrumbs = await getBreadcrumbs(null, (req.user as any).id);
     res.render("home", {
       folders: folders,
       title: "Home",

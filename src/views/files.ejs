@@ -8,7 +8,7 @@
   <body>
     <h1>Uploading file...</h1>
     <form action="/files<%= `?containingFolder=${folderId ? folderId : -1}`  %>" method="POST" enctype="multipart/form-data">
-      <input type="file" name="userFile" />
+      <input type="file" name="userFile" required />
       <button type="submit">Submit file</button>
     </form>
     <form action="/go-back" method="POST">
