@@ -85,7 +85,25 @@ function postLogIn(req: Request, res: Response, next: NextFunction) {
   if (!errors.isEmpty()) {
     return res.render("log-in", { errors: errors.array() });
   }
-  next();
+
+  passportHandler.authenticate("local", (err: any, user: any, info: any) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      // Authentication failed - show error message
+      return res.render("log-in", {
+        errors: [{ msg: info.message || "Invalid email or password" }],
+      });
+    }
+    // Authentication successful - log in the user
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect("/");
+    });
+  })(req, res, next);
 }
 
 function getLogOut(req: Request, res: Response, next: NextFunction) {
@@ -112,14 +130,7 @@ function goBack(req: Request, res: Response) {
 }
 
 const postSignUpPipeline = [validateSignup, postSignUp];
-const postLogInPipeline = [
-  validateLogin,
-  postLogIn,
-  passportHandler.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/log-in",
-  }),
-];
+const postLogInPipeline = [validateLogin, postLogIn];
 
 export {
   getHome,

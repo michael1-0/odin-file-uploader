@@ -7,8 +7,8 @@
   </head>
   <body>
     <form action="/log-in" method="post">
-      <% include("partials/errors", {errors: errors}) %>
       <h2>Log in</h2>
+      <%- include("partials/errors", {errors: errors}) %>
       <label for="email">Email:</label>
       <input type="email" name="email" id="email" />
 
