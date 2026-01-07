@@ -3,22 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>File Detail</title>
   </head>
   <body>
-    <h1>File Details</h1>
-    <ul>
-      <li><strong>Name:</strong> <%= file.name.split(".")[0]  %></li>
-      <li><strong>Type:</strong> <%= file.fileType.split("/")[1]  %></li>
-      <li><strong>Size:</strong> <%= `${(file.size / (1024 * 1024)).toFixed(3)} MB`  %></li>
-      <li><strong>Upload Date:</strong> <%=  new Date(file.uploadDate).toLocaleString()  %></li>
-    </ul>
-    <a href="<%= downloadUrl  %>">download</a>
-    <div>
-      <form action="/go-back" method="POST">
-        <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
-        <button type="submit">go back</button>
-      </form>
+    <div class="container">
+      <div class="auth-header">
+        <h2>📄 File Details</h2>
+      </div>
+      
+      <div class="detail-card">
+        <ul class="detail-list">
+          <li>
+            <strong>Name</strong>
+            <span><%= file.name.split(".")[0] %></span>
+          </li>
+          <li>
+            <strong>Type</strong>
+            <span><%= file.fileType.split("/")[1] %></span>
+          </li>
+          <li>
+            <strong>Size</strong>
+            <span><%= `${(file.size / (1024 * 1024)).toFixed(3)} MB` %></span>
+          </li>
+          <li>
+            <strong>Upload Date</strong>
+            <span><%= new Date(file.uploadDate).toLocaleString() %></span>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="action-bar">
+        <a href="<%= downloadUrl %>" class="btn btn-primary" download>⬇️ Download File</a>
+        <form action="/go-back" method="POST" style="margin: 0;">
+          <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
+          <button type="submit" class="btn">← Go Back</button>
+        </form>
+      </div>
     </div>
   </body>
 </html>

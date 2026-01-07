@@ -3,18 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title><%= !locals.isUpdate ? "New" : "Update" %> Folder</title>
   </head>
   <body>
-    <h1><%= !locals.isUpdate ? "New" : "Update"  %> Folder</h1>
-    <form action="/folders<%= folderId ?  `/${folderId}` : ""  %><%= !locals.isUpdate ? "" : "/update"  %>" method="POST">
-      <label for="name">Folder Name:</label>
-      <input type="text" name="name" id="name" value="<%= locals.folderName || ""  %>" required/>
-      <button type="submit">Submit</button>
-    </form>
-    <form action="/go-back" method="POST">
-        <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
-        <button type="submit">go back</button>
+    <div class="auth-container">
+      <div class="auth-header">
+        <h2>📁 <%= !locals.isUpdate ? "New" : "Update" %> Folder</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          <%= !locals.isUpdate ? "Create a new folder to organize your files" : "Update your folder name" %>
+        </p>
+      </div>
+      
+      <form action="/folders<%= folderId ? `/${folderId}` : "" %><%= !locals.isUpdate ? "" : "/update" %>" method="POST">
+        <div class="form-group">
+          <label for="name">Folder Name</label>
+          <input type="text" name="name" id="name" value="<%= locals.folderName || "" %>" placeholder="My Documents" required />
+        </div>
+        <button type="submit" class="btn-primary"><%= !locals.isUpdate ? "Create Folder" : "Update Folder" %></button>
       </form>
+      
+      <form action="/go-back" method="POST" style="margin-top: 1rem;">
+        <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
+        <button type="submit" class="btn">← Go Back</button>
+      </form>
+    </div>
   </body>
 </html>

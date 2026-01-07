@@ -1,10 +1,10 @@
-<h2>
+<nav class="breadcrumb">
   <% breadcrumbs.forEach((crumb, index) => { %>
     <% if (index === breadcrumbs.length - 1) { %>
-      <%= crumb.name %>
+      <span class="breadcrumb-current"><%= crumb.name %></span>
     <% } else { %>
       <a href="<%= crumb.id ? `/folders/${crumb.id}` : '/' %>"><%= crumb.name %></a>
-      <span> / </span>
+      <span class="breadcrumb-separator">/</span>
     <% } %>
   <% }); %>
-</h2>
+</nav>

@@ -14,6 +14,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", join(import.meta.dirname, "views"));
 
+app.use(express.static(join(import.meta.dirname, "../public")));
 app.use(sessionHandler);
 app.use(passportHandler.session());
 app.use(urlencoded({ extended: false }));

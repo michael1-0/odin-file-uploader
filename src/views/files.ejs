@@ -3,23 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Upload File</title>
   </head>
   <body>
-    <h1>Uploading file...</h1>
-    <% if (error) { %>
-      <div>
-        <%= error %>
+    <div class="auth-container">
+      <div class="auth-header">
+        <h2>📤 Upload File</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">EJS is pain</p>
       </div>
-    <% } %>
-    <form action="/files<%= `?containingFolder=${folderId ? folderId : -1}`  %>" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
-      <input type="file" name="userFile" required />
-      <button type="submit">Submit file</button>
-    </form>
-    <form action="/go-back" method="POST">
+      
+      <% if (error) { %>
+        <div class="error-messages">
+          <ul>
+            <li><%= error %></li>
+          </ul>
+        </div>
+      <% } %>
+      
+      <form action="/files<%= `?containingFolder=${folderId ? folderId : -1}` %>" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
-        <button type="submit">go back</button>
+        <div class="form-group">
+          <label for="userFile">Choose File</label>
+          <input type="file" name="userFile" id="userFile" required />
+        </div>
+        <button type="submit" class="btn-primary">Upload File</button>
       </form>
+      
+      <form action="/go-back" method="POST" style="margin-top: 1rem;">
+        <input type="hidden" name="previousUrl" value="<%= typeof previousUrl !== 'undefined' ? previousUrl : '/' %>">
+        <button type="submit" class="btn">← Go Back</button>
+      </form>
+    </div>
   </body>
 </html>

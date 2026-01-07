@@ -3,27 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Register</title>
   </head>
   <body>
-    <form action="/sign-up" method="post">
-      <h2>Register</h2>
+    <div class="auth-container">
+      <div class="auth-header">
+        <h2>Create Account</h2>
+      </div>
+      
       <%- include('partials/errors', { errors: errors }) %>
+      
+      <form action="/sign-up" method="post">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" name="name" id="name" placeholder="John Doe" required />
+        </div>
 
-      <label for="name">Your name:</label>
-      <input type="text" name="name" id="name" />
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" placeholder="your@email.com" required />
+        </div>
 
-      <label for="email">Email:</label>
-      <input type="email" name="email" id="email" />
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" placeholder="Create a strong password" required />
+        </div>
 
-      <label for="password">Password:</label>
-      <input type="password" name="password" id="password" />
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Re-enter your password" required />
+        </div>
 
-      <label for="confirmPassword">Confirm Password:</label>
-      <input type="password" name="confirmPassword" id="confirmPassword" />
-
-      <button type="submit">Submit</button>
-    </form>
-    <div>Already have an account? <a href="/log-in">Log in</a></div>
+        <button type="submit" class="btn-primary">Create Account</button>
+      </form>
+      
+      <div class="auth-footer">
+        Already have an account? <a href="/log-in">Log in</a>
+      </div>
+    </div>
   </body>
 </html>

@@ -3,38 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Odin File Uploader</title>
   </head>
   <body>
-    <%- include('breadcrumb') %>
-    <a href="/folders/<%= folderId ? `${folderId}/` : "" %>new">New Folder</a>
-    <a href="/files/new<%= folderId ? `?containingFolder=${folderId}` : "" %>">New File</a>
-    <hr />
-
-    <% if (folders.length > 0) { %>
-      <% folders.forEach((folder, index) => { %>
-        <div>
-          folder <%= index + 1 %>: <a href="/folders/<%= folder.id %>"><%= folder.name %></a> <a href="/folders/<%= folder.id %>/del">delete</a> <a href="/folders/<%= folder.id %>/update">update</a>
-        </div>
-      <% }); %>
-    <% } %>
-
-    <% if (files.length > 0) { %>
-      <% files.forEach((file, index) => { %>
-        <div>
-          file <%= index + 1 %>: <%= file.name %> <a href="/files/<%= file.id %><%= folderId ? `?containingFolder=${folderId}` : ""  %>">details</a> <a href="/files/<%= file.id %>/del">delete</a>
-        </div>
-      <% }); %>
-    <% } %>
-    <% if (files.length == 0 && folders.length == 0 ) { %>
-      <div>
-        Folders and files will show here
+    <div class="container">
+      <%- include('breadcrumb') %>
+      
+      <div class="action-bar">
+        <a href="/folders/<%= folderId ? `${folderId}/` : "" %>new" class="btn btn-primary">📁 New Folder</a>
+        <a href="/files/new<%= folderId ? `?containingFolder=${folderId}` : "" %>" class="btn btn-primary">📤 Upload File</a>
       </div>
-    <% } %>
 
-    <hr />
-    <div>
-      <a href="/log-out">log out</a>
+      <% if (folders.length > 0) { %>
+        <h3 style="margin-bottom: 1rem; color: var(--text-secondary);">Folders</h3>
+        <div class="item-grid">
+          <% folders.forEach((folder) => { %>
+            <div class="item-card">
+              <a href="/folders/<%= folder.id %>">
+              <div class="item-header">
+                <span class="item-icon">📁</span>
+                <div class="item-name">
+                  <%= folder.name %>
+                </div>
+              </div>
+              </a>
+              <div class="item-actions">
+                <a href="/folders/<%= folder.id %>/update" class="btn btn-small">Edit</a>
+                <a href="/folders/<%= folder.id %>/del" class="btn btn-small btn-danger">Delete</a>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <% if (files.length > 0) { %>
+        <h3 style="margin-bottom: 1rem; margin-top: 2rem; color: var(--text-secondary);">Files</h3>
+        <div class="item-grid">
+          <% files.forEach((file) => { %>
+            <div class="item-card">
+              <div class="item-header">
+                <span class="item-icon">📄</span>
+                <div class="item-name">
+                  <%= file.name %>
+                </div>
+              </div>
+              <div class="item-actions">
+                <a href="/files/<%= file.id %><%= folderId ? `?containingFolder=${folderId}` : ""  %>" class="btn btn-small">Details</a>
+                <a href="/files/<%= file.id %>/del" class="btn btn-small btn-danger">Delete</a>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <% if (files.length == 0 && folders.length == 0) { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">📂</div>
+          <p>No folders or files yet</p>
+          <p style="font-size: 0.875rem;">Create a new folder or upload a file to get started</p>
+        </div>
+      <% } %>
+
+      <div class="nav-footer">
+        <a href="/log-out" class="btn">Log Out</a>
+      </div>
     </div>
   </body>
 </html>
