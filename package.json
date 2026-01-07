@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && cp -r src/views dist/views",
     "dev": "tsx watch ./src/server.ts",
     "start": "node ./dist/server.js"
   },
