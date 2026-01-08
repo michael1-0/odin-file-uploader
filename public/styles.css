@@ -432,9 +432,6 @@ hr {
     padding: 1.5rem;
   }
 
-  .item-grid {
-    grid-template-columns: 1fr;
-  }
 
   .action-bar {
     flex-direction: column;
